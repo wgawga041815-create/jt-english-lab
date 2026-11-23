@@ -437,11 +437,11 @@ function startSpelling(n) {
         score++;
         if (!state.known.includes(w.en)) state.known.push(w.en);
         save();
-        $("#spellWhy").textContent = "对！" + w.ex;
+        $("#spellWhy").textContent = w.ex ? "对！" + w.ex : "对！";
         $("#spellWhy").classList.add("show");
         setTimeout(next, 800);
       } else {
-        $("#spellWhy").innerHTML = `正确拼写：<b>${esc(w.en)}</b><br>${esc(w.ex)}`;
+        $("#spellWhy").innerHTML = `正确拼写：<b>${esc(w.en)}</b>` + (w.ex ? `<br>${esc(w.ex)}` : "");
         $("#spellWhy").classList.add("show");
         input.disabled = true;
         setTimeout(next, 1600);
