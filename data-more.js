@@ -572,10 +572,5 @@ SPEAKING.push(...EXTRA_SPEAKING);
 LISTENING[0].band = 1; LISTENING[0].level = "初级 · 慢速";
 LISTENING[1].band = 2; LISTENING[1].level = "中级 · 常速";
 LISTENING[2].band = 2; LISTENING[2].level = "中级 · 真实语速";
-SPEAKING.forEach((s, i) => {
-  if (i < 2) s.band = 1;
-  else if (i < 8) s.band = 2;
-  else s.band = 1;
-});
 SPEAKING[0].band = 1; SPEAKING[1].band = 1; SPEAKING[2].band = 1; SPEAKING[3].band = 1;
 SPEAKING[4].band = 2; SPEAKING[5].band = 1; SPEAKING[6].band = 2; SPEAKING[7].band = 1;

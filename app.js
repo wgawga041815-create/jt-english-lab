@@ -134,8 +134,8 @@ function renderHome() {
   v.innerHTML = `
     <div class="hero">
       <div class="hero-main">
-        <span class="kicker">JT English Lab · 外贸实战</span>
-        <h1>从认得，到听得懂，<br>再到 <em>说得出</em>。</h1>
+        <span class="kicker">俊通达 · 充电器与数据线</span>
+        <h1>外贸英语</h1>
         <div class="hero-actions">
           <button class="btn btn-primary" data-go="words">开始 5 个单词</button>
           <button class="btn" data-go="listening">先练听力</button>
@@ -145,7 +145,7 @@ function renderHome() {
       <div class="hero-side">
         <div>
           <span class="kicker">Your progress</span>
-          <h3>每天 15 分钟，<br>先把“认得”变成“说得出”。</h3>
+          <h3>每天 15 分钟，<br>词、听力、口语各练一点。</h3>
           <p>${WORDS.length} 个高频词、${GRAMMAR.length} 个语法点、${LISTENING.length} 组对话、${SPEAKING.length} 个口语任务。</p>
         </div>
         <div class="side-stat"><b>${state.known.length}</b><span>/ ${WORDS.length} 个词已认识</span></div>
@@ -190,7 +190,7 @@ function renderHome() {
     </div>
 
     <div class="section-head" style="margin-top:34px">
-      <div><span class="kicker">Vocabulary</span><h2>词库进度</h2><p>六个场景，按你的节奏往下推。</p></div>
+      <div><span class="kicker">Vocabulary</span><h2>词库进度</h2><p>${CATEGORIES.length} 个场景，按你的节奏往下推。</p></div>
       <button class="btn btn-sm" data-go="words">去单词</button>
     </div>
     <div class="panel">
@@ -250,11 +250,13 @@ function renderWords() {
   $("#spellBtn").addEventListener("click", () => startSpelling(8));
   $$("#catChips .chip").forEach(ch => ch.addEventListener("click", () => {
     wordFilter.cat = ch.dataset.cat;
+    wordLimit = 60;
     $$("#catChips .chip").forEach(x => x.classList.toggle("active", x === ch));
     renderWordGrid();
   }));
   $("#wordSearch").addEventListener("input", e => {
     wordFilter.q = e.target.value.trim().toLowerCase();
+    wordLimit = 60;
     renderWordGrid();
   });
   renderWordGrid();
@@ -271,11 +273,14 @@ function filteredWords() {
   });
 }
 
+let wordLimit = 60;
+
 function renderWordGrid() {
   const grid = $("#wordGrid");
   if (!grid) return;
-  const list = filteredWords();
-  if (!list.length) { grid.innerHTML = `<div class="empty">没有找到，换个关键词试试。</div>`; return; }
+  const all = filteredWords();
+  if (!all.length) { grid.innerHTML = `<div class="empty">没有找到，换个关键词试试。</div>`; return; }
+  const list = all.slice(0, wordLimit);
   grid.innerHTML = list.map(w => `
     <article class="word-card ${state.known.includes(w.en) ? "known" : ""}" data-en="${esc(w.en)}">
       <div class="word-top">
@@ -283,8 +288,9 @@ function renderWordGrid() {
         <span class="pos">${esc(w.pos)}</span>
       </div>
       <div class="word-zh">${esc(w.zh)}</div>
-      <div class="word-ex">${esc(w.ex)}</div>
-    </article>`).join("");
+    </article>`).join("") + (all.length > wordLimit
+      ? `<button class="btn" id="loadMore" style="grid-column:1/-1;justify-self:center;margin-top:8px">加载更多（${wordLimit} / ${all.length}）</button>`
+      : "");
 
   grid.querySelectorAll(".word-card").forEach(card => {
     card.addEventListener("click", () => {
@@ -292,6 +298,8 @@ function renderWordGrid() {
       if (w) openWord(w);
     });
   });
+  const more = $("#loadMore");
+  if (more) more.addEventListener("click", () => { wordLimit += 60; renderWordGrid(); });
 }
 
 function openWord(w) {
@@ -301,7 +309,7 @@ function openWord(w) {
     <div class="flash-pos">${esc(w.pos)}</div>
     <div class="flash-en">${esc(w.en)}</div>
     <div class="flash-zh" id="flashZh" style="visibility:hidden">${esc(w.zh)}</div>
-    <div class="flash-ex" id="flashEx">${esc(w.ex)}<br><span style="color:#9a9285">${esc(w.exZh)}</span></div>
+    ${w.ex ? `<div class="flash-ex" id="flashEx">${esc(w.ex)}<br><span style="color:#9a9285">${esc(w.exZh || "")}</span></div>` : ""}
     <div class="modal-actions">
       <button class="btn btn-sm" id="sayWord">🔊 听发音</button>
       <button class="btn btn-sm" id="revealWord">显示中文</button>
@@ -312,7 +320,8 @@ function openWord(w) {
   $("#sayWord").addEventListener("click", () => speak(w.en, 0.82));
   $("#revealWord").addEventListener("click", () => {
     $("#flashZh").style.visibility = "visible";
-    $("#flashEx").classList.add("show");
+    const ex = $("#flashEx");
+    if (ex) ex.classList.add("show");
   });
   $("#markKnown").addEventListener("click", () => {
     if (!state.known.includes(w.en)) state.known.push(w.en);
@@ -464,7 +473,7 @@ function renderGrammar() {
   const v = $("#view-grammar");
   v.innerHTML = `
     <div class="section-head">
-      <div><span class="kicker">Grammar</span><h2>基础语法</h2><p>10 个点，全是报价、交期、邮件里马上会用到的。</p></div>
+      <div><span class="kicker">Grammar</span><h2>基础语法</h2><p>${GRAMMAR.length} 个点，全是报价、交期、邮件里马上会用到的。</p></div>
       <div class="progress-pill">${grammarDone()} / ${GRAMMAR.length} 完成</div>
     </div>
     <div class="word-grid">
@@ -832,28 +841,28 @@ if (bootParams.get("selftest") === "1") {
   const ok = (name, cond) => out.push((cond ? "PASS" : "FAIL") + " · " + name);
   const clean = () => !document.body.textContent.includes("undefined");
   try {
-    ok("300 words", WORDS.length === 300);
-    ok("all words complete", WORDS.every(w => w.en && w.zh && w.ex && w.c));
-    ok("6 categories", CATEGORIES.length === 6);
-    ok("10 grammar lessons", GRAMMAR.length === 10);
+    ok("1000 words", WORDS.length === 1000);
+    ok("all words complete", WORDS.every(w => w.en && w.zh && w.c));
+    ok("10 categories", CATEGORIES.length === 10);
+    ok("16 grammar lessons", GRAMMAR.length === 16);
     ok("6 questions each", GRAMMAR.every(g => g.questions.length === 6));
     ok("answers in range", GRAMMAR.every(g => g.questions.every(q => q.a >= 0 && q.a < q.o.length)));
-    ok("21 listening sets", LISTENING.length === 21);
+    ok("30 listening sets", LISTENING.length === 30);
     ok("4 lines each", LISTENING.every(l => l.lines.length === 4));
-    ok("24 speaking tasks", SPEAKING.length === 24);
+    ok("36 speaking tasks", SPEAKING.length === 36);
 
     show("home"); ok("home renders", document.querySelectorAll("#view-home .task-card").length === 4 && clean());
-    show("words"); ok("words render", document.querySelectorAll("#wordGrid .word-card").length === 300 && clean());
+    show("words"); ok("words render", document.querySelectorAll("#wordGrid .word-card").length === 60 && clean());
     openWord(WORDS[0]); ok("word modal", !!document.querySelector("#modal .flash-en")); closeModal();
     startQuiz(5); ok("quiz modal", document.querySelectorAll("#modal .dot").length === 5); closeModal();
 
-    show("grammar"); ok("grammar renders", document.querySelectorAll("#view-grammar [data-gid]").length === 10 && clean());
+    show("grammar"); ok("grammar renders", document.querySelectorAll("#view-grammar [data-gid]").length === 16 && clean());
     openGrammar("g1"); ok("grammar detail", document.querySelectorAll("#view-grammar .question").length === 6 && clean());
 
-    show("listening"); ok("listening renders", document.querySelectorAll("#view-listening [data-lid]").length === 21 && clean());
+    show("listening"); ok("listening renders", document.querySelectorAll("#view-listening [data-lid]").length === 30 && clean());
     openListening("l1"); ok("listening detail", document.querySelectorAll("#view-listening .line-row").length === 4 && document.querySelectorAll("#view-listening .question").length === 3 && clean());
 
-    show("speaking"); ok("speaking renders", document.querySelectorAll("#view-speaking [data-sid]").length === 24 && clean());
+    show("speaking"); ok("speaking renders", document.querySelectorAll("#view-speaking [data-sid]").length === 36 && clean());
     openSpeaking("s1"); ok("speaking detail", !!document.querySelector("#recBtn") && clean());
 
   } catch (e) {
