@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>JT English Lab · 俊通达外贸英语</title>
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="#" data-tab="home">
+    <span class="brand-mark">JT</span>
+    <span class="brand-text">
+      <strong>English Lab</strong>
+      <em>俊通达 · 充电器外贸英语</em>
+    </span>
+  </a>
+  <nav class="tabs" id="tabs">
+    <button data-tab="home" class="active">今日</button>
+    <button data-tab="words">单词</button>
+    <button data-tab="grammar">语法</button>
+    <button data-tab="listening">听力</button>
+    <button data-tab="speaking">口语</button>
+    <button data-tab="plan">三期</button>
+  </nav>
+  <div class="progress-pill" id="topProgress">0 / 120</div>
+</header>
+
+<main id="app">
+  <section id="view-home" class="view active"></section>
+  <section id="view-words" class="view"></section>
+  <section id="view-grammar" class="view"></section>
+  <section id="view-listening" class="view"></section>
+  <section id="view-speaking" class="view"></section>
+  <section id="view-plan" class="view"></section>
+</main>
+
+<footer class="foot">
+  <span>俊通达电子 · 外贸英语练习</span>
+  <span>每天 15 分钟，先把“认得”变成“说得出”。</span>
+</footer>
+
+<div class="modal-backdrop" id="modalBackdrop" hidden>
+  <div class="modal" id="modal" role="dialog" aria-modal="true"></div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
