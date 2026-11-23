@@ -89,7 +89,7 @@ const WORDS = [
   { c: "client", en: "procurement", zh: "采购", pos: "n.", ex: "She works in procurement.", exZh: "她做采购。" },
   { c: "client", en: "purchasing manager", zh: "采购经理", pos: "n.", ex: "The purchasing manager will visit us.", exZh: "采购经理要来我们这儿。" },
   { c: "client", en: "negotiate", zh: "谈判", pos: "v.", ex: "We negotiate price and payment terms.", exZh: "我们谈价格和付款方式。" },
-  { c: "client", en: "offer", zh: "报盘；提供", pos: "v./n.", ex: "We can offer two options.", exZh: "我们可以给两个方案。" },
+  { c: "client", en: "make an offer", zh: "出价；报盘", pos: "phr.", ex: "They made an offer at 2.75.", exZh: "他们还价到 2.75。" },
   { c: "client", en: "deal", zh: "交易", pos: "n.", ex: "Let's close the deal this week.", exZh: "这周把单子定下来吧。" },
   { c: "client", en: "relationship", zh: "关系", pos: "n.", ex: "Price matters, but relationships matter more.", exZh: "价格重要，关系更重要。" },
   { c: "client", en: "repeat order", zh: "返单", pos: "n.", ex: "We hope to get a repeat order.", exZh: "我们希望拿到返单。" },
@@ -427,26 +427,5 @@ const SPEAKING = [
     frames: ["Welcome to ___. How was your ___?", "It's about ___ minutes to the hotel.", "Is this your first time in ___?"],
     model: "Welcome to Shenzhen. How was your flight? It's about 40 minutes to the hotel. We've booked you at the Marriott, and tomorrow we'll visit the factory. Is this your first time in Shenzhen?",
     keywords: ["welcome", "flight", "minutes", "hotel", "first time"],
-  },
-];
-
-const PHASES = [
-  {
-    id: "p1", no: "01", title: "认得识", en: "Recognise", weeks: "第 1–4 周",
-    goal: "看到单词和句子，知道什么意思；把 120 个高频词和 10 个语法点过一遍。",
-    tasks: ["每天 10 个单词：先认，再测", "每天 1 个语法点 + 6 道题", "读画册上的产品名、参数、认证"],
-    test: "单词测试正确率 90%；能读懂报价单和规格书的主要信息。",
-  },
-  {
-    id: "p2", no: "02", title: "听得懂", en: "Understand", weeks: "第 5–8 周",
-    goal: "听清数量、价格、交期、投诉；从慢速过渡到真实语速。",
-    tasks: ["3 组对话，先看文本再盲听", "每天 3 句听写", "跟读模仿语调，不做翻译"],
-    test: "每组对话 3 题全对；听写句子 80% 正确。",
-  },
-  {
-    id: "p3", no: "03", title: "说得出", en: "Speak", weeks: "第 9–12 周",
-    goal: "把词和句型变成自己的话：介绍公司、报价、接投诉、展会开场。",
-    tasks: ["8 个口语任务，每个录 3 遍", "用关键词自查，再对照示范", "每周 1 次 10 分钟角色扮演"],
-    test: "60 秒公司 + 产品介绍；报价场景能接住一次压价。",
   },
 ];

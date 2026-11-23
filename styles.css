@@ -749,3 +749,16 @@ main { max-width: 1180px; margin: 0 auto; padding: 34px 34px 70px; }
 #lines.show-zh .zh { display: block; }
 
 [hidden] { display: none !important; }
+
+.cat-row {
+  display: grid;
+  grid-template-columns: 120px 1fr 90px;
+  gap: 14px;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px dashed var(--line);
+}
+.cat-row:last-child { border-bottom: 0; }
+.cat-name { font-size: 13.5px; }
+.cat-count { font-size: 12px; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+.cat-row .progress-bar { height: 8px; }

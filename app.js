@@ -88,7 +88,6 @@ const renders = {
   grammar: renderGrammar,
   listening: renderListening,
   speaking: renderSpeaking,
-  plan: renderPlan,
 };
 let currentTab = "home";
 
@@ -129,30 +128,17 @@ function grammarDone() { return Object.keys(state.grammar).length; }
 function listeningDone() { return Object.keys(state.listening).length; }
 function speakingDone() { return Object.keys(state.speaking).length; }
 
-function phaseCard(p) {
-  return `
-    <article class="phase-card">
-      <span class="no">${p.no}</span>
-      <h3>${p.title}</h3>
-      <div class="en">${p.en}</div>
-      <p>${p.goal}</p>
-      <span class="weeks">${p.weeks}</span>
-    </article>`;
-}
-
 /* ---------------- home ---------------- */
 function renderHome() {
   const v = $("#view-home");
-  const ph = PHASES;
   v.innerHTML = `
     <div class="hero">
       <div class="hero-main">
         <span class="kicker">JT English Lab · 外贸实战</span>
         <h1>从认得，到听得懂，<br>再到 <em>说得出</em>。</h1>
-        <p>围绕俊通达的充电器、数据线和 OEM 外贸流程设计。先把词认熟，再练耳朵，最后把话说到客户心里。</p>
         <div class="hero-actions">
           <button class="btn btn-primary" data-go="words">开始 5 个单词</button>
-          <button class="btn" data-go="plan">看三期路线</button>
+          <button class="btn" data-go="listening">先练听力</button>
         </div>
         <p style="margin:14px 0 0;font-size:11.5px;color:#9a9285">建议用 Chrome / Edge 打开，发音和录音最稳。</p>
       </div>
@@ -160,7 +146,7 @@ function renderHome() {
         <div>
           <span class="kicker">Your progress</span>
           <h3>每天 15 分钟，<br>先把“认得”变成“说得出”。</h3>
-          <p>不算长，但够把 120 个高频词、10 个语法点和 3 组真实对话过一遍。</p>
+          <p>${WORDS.length} 个高频词、${GRAMMAR.length} 个语法点、${LISTENING.length} 组对话、${SPEAKING.length} 个口语任务。</p>
         </div>
         <div class="side-stat"><b>${state.known.length}</b><span>/ ${WORDS.length} 个词已认识</span></div>
       </div>
@@ -204,10 +190,21 @@ function renderHome() {
     </div>
 
     <div class="section-head" style="margin-top:34px">
-      <div><span class="kicker">Three phases</span><h2>三期课程</h2><p>认得识 → 听得懂 → 说得出。</p></div>
-      <button class="btn btn-sm" data-go="plan">详细路线</button>
+      <div><span class="kicker">Vocabulary</span><h2>词库进度</h2><p>六个场景，按你的节奏往下推。</p></div>
+      <button class="btn btn-sm" data-go="words">去单词</button>
     </div>
-    <div class="phase-grid">${ph.map(phaseCard).join("")}</div>
+    <div class="panel">
+      ${CATEGORIES.map(c => {
+        const total = WORDS.filter(w => w.c === c.id).length;
+        const known = WORDS.filter(w => w.c === c.id && state.known.includes(w.en)).length;
+        const pct = total ? Math.round((known / total) * 100) : 0;
+        return `<div class="cat-row">
+          <span class="cat-name">${c.name}</span>
+          <span class="progress-bar"><span style="width:${pct}%"></span></span>
+          <span class="cat-count">${known} / ${total}</span>
+        </div>`;
+      }).join("")}
+    </div>
   `;
 
   v.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => show(b.dataset.go)));
@@ -551,15 +548,23 @@ function openGrammar(id) {
 }
 
 /* ---------------- listening ---------------- */
+let listenBand = 0;
 function renderListening() {
   const v = $("#view-listening");
+  const list = LISTENING.filter(l => !listenBand || l.band === listenBand);
   v.innerHTML = `
     <div class="section-head">
-      <div><span class="kicker">Listening</span><h2>听力</h2><p>三组真实场景，从慢速到真实语速。先听结构，再听细节。</p></div>
+      <div><span class="kicker">Listening</span><h2>听力</h2><p>${LISTENING.length} 组真实场景，从慢速到真实语速。先听结构，再听细节。</p></div>
       <div class="progress-pill">${listeningDone()} / ${LISTENING.length} 完成</div>
     </div>
+    <div class="chips" style="margin:0 0 18px">
+      <button class="chip ${listenBand === 0 ? "active" : ""}" data-band="0">全部</button>
+      <button class="chip ${listenBand === 1 ? "active" : ""}" data-band="1">初级</button>
+      <button class="chip ${listenBand === 2 ? "active" : ""}" data-band="2">中级</button>
+      <button class="chip ${listenBand === 3 ? "active" : ""}" data-band="3">高级</button>
+    </div>
     <div class="listen-set">
-      ${LISTENING.map(l => `
+      ${list.map(l => `
         <article class="listen-card" data-lid="${l.id}">
           <div class="level">${esc(l.level)}</div>
           <h4>${esc(l.title)}</h4>
@@ -575,6 +580,10 @@ function renderListening() {
     </div>
   `;
   v.querySelectorAll("[data-lid]").forEach(c => c.addEventListener("click", () => openListening(c.dataset.lid)));
+  v.querySelectorAll("[data-band]").forEach(b => b.addEventListener("click", () => {
+    listenBand = Number(b.dataset.band);
+    renderListening();
+  }));
 }
 
 function openListening(id) {
@@ -658,15 +667,23 @@ function openListening(id) {
 }
 
 /* ---------------- speaking ---------------- */
+let speakBand = 0;
 function renderSpeaking() {
   const v = $("#view-speaking");
+  const list = SPEAKING.filter(s => !speakBand || s.band === speakBand);
   v.innerHTML = `
     <div class="section-head">
-      <div><span class="kicker">Speaking</span><h2>口语</h2><p>每个任务 30–60 秒。先看句架，再录，再对照示范。</p></div>
+      <div><span class="kicker">Speaking</span><h2>口语</h2><p>${SPEAKING.length} 个任务，每个 30–60 秒。先看句架，再录，再对照示范。</p></div>
       <div class="progress-pill">${speakingDone()} / ${SPEAKING.length} 完成</div>
     </div>
+    <div class="chips" style="margin:0 0 18px">
+      <button class="chip ${speakBand === 0 ? "active" : ""}" data-band="0">全部</button>
+      <button class="chip ${speakBand === 1 ? "active" : ""}" data-band="1">初级</button>
+      <button class="chip ${speakBand === 2 ? "active" : ""}" data-band="2">中级</button>
+      <button class="chip ${speakBand === 3 ? "active" : ""}" data-band="3">高级</button>
+    </div>
     <div class="speak-grid">
-      ${SPEAKING.map(s => `
+      ${list.map(s => `
         <article class="speak-card" data-sid="${s.id}">
           <span class="tag">${esc(s.tag)}</span>
           <h4>${esc(s.title)}</h4>
@@ -676,6 +693,10 @@ function renderSpeaking() {
     </div>
   `;
   v.querySelectorAll("[data-sid]").forEach(c => c.addEventListener("click", () => openSpeaking(c.dataset.sid)));
+  v.querySelectorAll("[data-band]").forEach(b => b.addEventListener("click", () => {
+    speakBand = Number(b.dataset.band);
+    renderSpeaking();
+  }));
 }
 
 function openSpeaking(id) {
@@ -801,32 +822,6 @@ function openSpeaking(id) {
   }
 }
 
-/* ---------------- plan ---------------- */
-function renderPlan() {
-  const v = $("#view-plan");
-  v.innerHTML = `
-    <div class="section-head">
-      <div><span class="kicker">12 weeks</span><h2>三期课程</h2><p>每一期只解决一件事：先认得，再听懂，最后说出来。</p></div>
-    </div>
-    <div class="timeline">
-      ${PHASES.map(p => `
-        <div class="tl-item">
-          <h3>${p.no} · ${p.title} <span style="font-family:Georgia,serif;font-style:italic;font-size:12px;color:#9a9285">${p.en}</span></h3>
-          <div class="weeks">${p.weeks} · 每周 3 次，每次 30–45 分钟</div>
-          <p>${p.goal}</p>
-          <ul>${p.tasks.map(t => `<li>${t}</li>`).join("")}</ul>
-          <div class="test-box"><b>过关标准：</b>${p.test}</div>
-        </div>`).join("")}
-    </div>
-    <div class="panel">
-      <h3>这个网站怎么配合上课</h3>
-      <div class="example"><div class="en">课前 10 分钟</div><div class="zh">先做单词测验，把错词截图发给老师；课上只讲错词和句子。</div></div>
-      <div class="example"><div class="en">课中 30 分钟</div><div class="zh">一个语法点 + 一组听力 + 一个口语任务；口语必须录音。</div></div>
-      <div class="example"><div class="en">课后 10 分钟</div><div class="zh">听写 3 句、把今天的口语再录一遍，对比第一遍。</div></div>
-    </div>
-  `;
-}
-
 /* ---------------- boot ---------------- */
 updateTop();
 const bootParams = new URLSearchParams(location.search);
@@ -837,31 +832,30 @@ if (bootParams.get("selftest") === "1") {
   const ok = (name, cond) => out.push((cond ? "PASS" : "FAIL") + " · " + name);
   const clean = () => !document.body.textContent.includes("undefined");
   try {
-    ok("120 words", WORDS.length === 120);
+    ok("300 words", WORDS.length === 300);
     ok("all words complete", WORDS.every(w => w.en && w.zh && w.ex && w.c));
     ok("6 categories", CATEGORIES.length === 6);
     ok("10 grammar lessons", GRAMMAR.length === 10);
     ok("6 questions each", GRAMMAR.every(g => g.questions.length === 6));
     ok("answers in range", GRAMMAR.every(g => g.questions.every(q => q.a >= 0 && q.a < q.o.length)));
-    ok("3 listening sets", LISTENING.length === 3);
+    ok("21 listening sets", LISTENING.length === 21);
     ok("4 lines each", LISTENING.every(l => l.lines.length === 4));
-    ok("8 speaking tasks", SPEAKING.length === 8);
+    ok("24 speaking tasks", SPEAKING.length === 24);
 
     show("home"); ok("home renders", document.querySelectorAll("#view-home .task-card").length === 4 && clean());
-    show("words"); ok("words render", document.querySelectorAll("#wordGrid .word-card").length === 120 && clean());
+    show("words"); ok("words render", document.querySelectorAll("#wordGrid .word-card").length === 300 && clean());
     openWord(WORDS[0]); ok("word modal", !!document.querySelector("#modal .flash-en")); closeModal();
     startQuiz(5); ok("quiz modal", document.querySelectorAll("#modal .dot").length === 5); closeModal();
 
     show("grammar"); ok("grammar renders", document.querySelectorAll("#view-grammar [data-gid]").length === 10 && clean());
     openGrammar("g1"); ok("grammar detail", document.querySelectorAll("#view-grammar .question").length === 6 && clean());
 
-    show("listening"); ok("listening renders", document.querySelectorAll("#view-listening [data-lid]").length === 3 && clean());
+    show("listening"); ok("listening renders", document.querySelectorAll("#view-listening [data-lid]").length === 21 && clean());
     openListening("l1"); ok("listening detail", document.querySelectorAll("#view-listening .line-row").length === 4 && document.querySelectorAll("#view-listening .question").length === 3 && clean());
 
-    show("speaking"); ok("speaking renders", document.querySelectorAll("#view-speaking [data-sid]").length === 8 && clean());
+    show("speaking"); ok("speaking renders", document.querySelectorAll("#view-speaking [data-sid]").length === 24 && clean());
     openSpeaking("s1"); ok("speaking detail", !!document.querySelector("#recBtn") && clean());
 
-    show("plan"); ok("plan renders", document.querySelectorAll("#view-plan .tl-item").length === 3 && clean());
   } catch (e) {
     out.push("ERROR · " + e.message);
   }
