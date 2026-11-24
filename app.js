@@ -1,4 +1,4 @@
-/* 俊通达 · 外贸英语练习站 */
+/* 外贸英语练习站 */
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 const KEY = "jt-english-v1";
@@ -134,7 +134,6 @@ function renderHome() {
   v.innerHTML = `
     <div class="hero">
       <div class="hero-main">
-        <span class="kicker">俊通达 · 充电器与数据线</span>
         <h1>外贸英语</h1>
         <div class="hero-actions">
           <button class="btn btn-primary" data-go="words">开始 5 个单词</button>
@@ -847,9 +846,9 @@ if (bootParams.get("selftest") === "1") {
     ok("16 grammar lessons", GRAMMAR.length === 16);
     ok("6 questions each", GRAMMAR.every(g => g.questions.length === 6));
     ok("answers in range", GRAMMAR.every(g => g.questions.every(q => q.a >= 0 && q.a < q.o.length)));
-    ok("30 listening sets", LISTENING.length === 30);
+    ok("45 listening sets", LISTENING.length === 45);
     ok("4 lines each", LISTENING.every(l => l.lines.length === 4));
-    ok("36 speaking tasks", SPEAKING.length === 36);
+    ok("54 speaking tasks", SPEAKING.length === 54);
 
     show("home"); ok("home renders", document.querySelectorAll("#view-home .task-card").length === 4 && clean());
     show("words"); ok("words render", document.querySelectorAll("#wordGrid .word-card").length === 60 && clean());
@@ -859,10 +858,10 @@ if (bootParams.get("selftest") === "1") {
     show("grammar"); ok("grammar renders", document.querySelectorAll("#view-grammar [data-gid]").length === 16 && clean());
     openGrammar("g1"); ok("grammar detail", document.querySelectorAll("#view-grammar .question").length === 6 && clean());
 
-    show("listening"); ok("listening renders", document.querySelectorAll("#view-listening [data-lid]").length === 30 && clean());
+    show("listening"); ok("listening renders", document.querySelectorAll("#view-listening [data-lid]").length === 45 && clean());
     openListening("l1"); ok("listening detail", document.querySelectorAll("#view-listening .line-row").length === 4 && document.querySelectorAll("#view-listening .question").length === 3 && clean());
 
-    show("speaking"); ok("speaking renders", document.querySelectorAll("#view-speaking [data-sid]").length === 36 && clean());
+    show("speaking"); ok("speaking renders", document.querySelectorAll("#view-speaking [data-sid]").length === 54 && clean());
     openSpeaking("s1"); ok("speaking detail", !!document.querySelector("#recBtn") && clean());
 
   } catch (e) {
