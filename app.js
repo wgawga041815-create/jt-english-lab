@@ -39,7 +39,7 @@ if ("speechSynthesis" in window) speechSynthesis.onvoiceschanged = () => { cache
 function speak(text, rate = 0.86) {
   if (!("speechSynthesis" in window)) return toast("当前浏览器不支持发音");
   speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
+  const u = new SpeechSynthesisUtterance(window.speechText ? window.speechText(text) : text);
   u.lang = "en-US";
   u.rate = rate;
   const v = pickVoice();
@@ -51,7 +51,7 @@ function speakQueue(lines, rate = 0.86) {
   speechSynthesis.cancel();
   const v = pickVoice();
   lines.forEach(t => {
-    const u = new SpeechSynthesisUtterance(t);
+    const u = new SpeechSynthesisUtterance(window.speechText ? window.speechText(t) : t);
     u.lang = "en-US";
     u.rate = rate;
     if (v) u.voice = v;
@@ -840,15 +840,15 @@ if (bootParams.get("selftest") === "1") {
   const ok = (name, cond) => out.push((cond ? "PASS" : "FAIL") + " · " + name);
   const clean = () => !document.body.textContent.includes("undefined");
   try {
-    ok("1000 words", WORDS.length === 1000);
+    ok("1100 words", WORDS.length === 1100);
     ok("all words complete", WORDS.every(w => w.en && w.zh && w.c));
-    ok("10 categories", CATEGORIES.length === 10);
+    ok("11 categories", CATEGORIES.length === 11);
     ok("16 grammar lessons", GRAMMAR.length === 16);
     ok("6 questions each", GRAMMAR.every(g => g.questions.length === 6));
     ok("answers in range", GRAMMAR.every(g => g.questions.every(q => q.a >= 0 && q.a < q.o.length)));
-    ok("45 listening sets", LISTENING.length === 45);
+    ok("51 listening sets", LISTENING.length === 51);
     ok("4 lines each", LISTENING.every(l => l.lines.length === 4));
-    ok("54 speaking tasks", SPEAKING.length === 54);
+    ok("62 speaking tasks", SPEAKING.length === 62);
 
     show("home"); ok("home renders", document.querySelectorAll("#view-home .task-card").length === 4 && clean());
     show("words"); ok("words render", document.querySelectorAll("#wordGrid .word-card").length === 60 && clean());
@@ -858,10 +858,10 @@ if (bootParams.get("selftest") === "1") {
     show("grammar"); ok("grammar renders", document.querySelectorAll("#view-grammar [data-gid]").length === 16 && clean());
     openGrammar("g1"); ok("grammar detail", document.querySelectorAll("#view-grammar .question").length === 6 && clean());
 
-    show("listening"); ok("listening renders", document.querySelectorAll("#view-listening [data-lid]").length === 45 && clean());
+    show("listening"); ok("listening renders", document.querySelectorAll("#view-listening [data-lid]").length === 51 && clean());
     openListening("l1"); ok("listening detail", document.querySelectorAll("#view-listening .line-row").length === 4 && document.querySelectorAll("#view-listening .question").length === 3 && clean());
 
-    show("speaking"); ok("speaking renders", document.querySelectorAll("#view-speaking [data-sid]").length === 54 && clean());
+    show("speaking"); ok("speaking renders", document.querySelectorAll("#view-speaking [data-sid]").length === 62 && clean());
     openSpeaking("s1"); ok("speaking detail", !!document.querySelector("#recBtn") && clean());
 
   } catch (e) {
