@@ -107,6 +107,17 @@
     // 普通数字
     t = t.replace(/(?<![\w.])([\d,]+(?:\.\d+)?)(?![\w])/g, (m, n) => numberWords(n));
 
+    // 45W charger -> forty-five watt charger（作定语时单位用单数）
+    const singular = {
+      "volts": "volt", "watts": "watt", "amps": "amp",
+      "millimeters": "millimeter", "centimeters": "centimeter",
+      "kilograms": "kilogram", "meters": "meter", "grams": "gram",
+      "milliamp hours": "milliamp hour"
+    };
+    const nouns = "charger|adapter|cable|power bank|battery|input|output|port|device|product|unit|model|box|carton|container";
+    t = t.replace(new RegExp("\\b(" + Object.keys(singular).join("|") + ")\\s+(" + nouns + ")\\b", "gi"),
+      (m, u, n) => (singular[u.toLowerCase()] || u) + " " + n);
+
     return t.replace(/\s+/g, " ").trim();
   }
 
