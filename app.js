@@ -136,7 +136,7 @@ function renderHome() {
       <div class="hero-main">
         <h1>外贸英语</h1>
         <div class="hero-actions">
-          <button class="btn btn-primary" data-go="words">开始 5 个单词</button>
+          <button class="btn btn-primary" data-go="words">开始 20 个单词</button>
           <button class="btn" data-go="listening">先练听力</button>
         </div>
         <p style="margin:14px 0 0;font-size:11.5px;color:#9a9285">建议用 Chrome / Edge 打开，发音和录音最稳。</p>
@@ -144,7 +144,7 @@ function renderHome() {
       <div class="hero-side">
         <div>
           <span class="kicker">Your progress</span>
-          <h3>每天 15 分钟，<br>词、听力、口语各练一点。</h3>
+          <h3>每天 30–40 分钟，<br>词、听力、口语各练一点。</h3>
           <p>${WORDS.length} 个高频词、${GRAMMAR.length} 个语法点、${LISTENING.length} 组对话、${SPEAKING.length} 个口语任务。</p>
         </div>
         <div class="side-stat"><b>${state.known.length}</b><span>/ ${WORDS.length} 个词已认识</span></div>
@@ -159,32 +159,45 @@ function renderHome() {
     </div>
 
     <div class="section-head">
-      <div><span class="kicker">Today</span><h2>今天练什么</h2><p>四件事，15 分钟。做完就算打卡。</p></div>
+      <div><span class="kicker">Today</span><h2>今天练什么</h2><p>六件事，约 40 分钟。做完就算打卡。</p></div>
+      <div class="progress-pill">20 词 · 6 题 · 2 组听力 · 2 个口语</div>
     </div>
-    <div class="task-grid">
+    <div class="task-grid six">
       <div class="task-card">
-        <span class="label">Words · 5 min</span>
-        <h4>5 个单词</h4>
-        <p>先认，再测。不熟的会自动回到队列。</p>
-        <button class="btn btn-sm" data-quiz="5">开始</button>
+        <span class="label">Words · 10 min</span>
+        <h4>20 个单词</h4>
+        <p>10 个新词 + 10 个到期复习；错词自动回到队列。</p>
+        <button class="btn btn-sm" data-quiz="20">开始 20 个</button>
       </div>
       <div class="task-card">
-        <span class="label">Grammar · 4 min</span>
+        <span class="label">Grammar · 6 min</span>
         <h4>1 个语法点</h4>
-        <p>一个规则 + 6 道题，错题马上解释。</p>
+        <p>一个规则 + 6 道题，错题当场解释。</p>
         <button class="btn btn-sm" data-grammar-first="1">开始</button>
       </div>
       <div class="task-card">
-        <span class="label">Listening · 3 min</span>
-        <h4>1 组听力</h4>
-        <p>先听大意，再听细节。可隐藏文本。</p>
-        <button class="btn btn-sm" data-listen-first="1">开始</button>
+        <span class="label">Listening · 10 min</span>
+        <h4>2 组听力</h4>
+        <p>先盲听一遍，再看文本；两组各 3 道题。</p>
+        <button class="btn btn-sm" data-listen-first="1">开始第一组</button>
       </div>
       <div class="task-card">
-        <span class="label">Speaking · 3 min</span>
-        <h4>1 个口语任务</h4>
-        <p>录一遍，听一遍，再对照示范改一句。</p>
-        <button class="btn btn-sm" data-speak-first="1">开始</button>
+        <span class="label">Speaking · 8 min</span>
+        <h4>2 个口语任务</h4>
+        <p>每个录两遍，第二遍对照示范改一句。</p>
+        <button class="btn btn-sm" data-speak-first="1">开始第一个</button>
+      </div>
+      <div class="task-card">
+        <span class="label">Spelling · 4 min</span>
+        <h4>10 个拼写</h4>
+        <p>听发音拼单词，拼错立刻看正确写法。</p>
+        <button class="btn btn-sm" data-spell="10">开始听写</button>
+      </div>
+      <div class="task-card">
+        <span class="label">Review · 2 min</span>
+        <h4>复盘 10 个词</h4>
+        <p>回看标了“还要练”的词，再读一遍再标记。</p>
+        <button class="btn btn-sm" data-go="words">去词库</button>
       </div>
     </div>
 
@@ -208,6 +221,7 @@ function renderHome() {
 
   v.querySelectorAll("[data-go]").forEach(b => b.addEventListener("click", () => show(b.dataset.go)));
   v.querySelectorAll("[data-quiz]").forEach(b => b.addEventListener("click", () => startQuiz(Number(b.dataset.quiz))));
+  v.querySelectorAll("[data-spell]").forEach(b => b.addEventListener("click", () => startSpelling(Number(b.dataset.spell))));
   v.querySelector("[data-grammar-first]").addEventListener("click", () => {
     const next = GRAMMAR.find(g => !state.grammar[g.id]) || GRAMMAR[0];
     show("grammar"); openGrammar(next.id);
